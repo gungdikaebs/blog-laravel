@@ -1,7 +1,7 @@
 @extends('layouts.main')
 {{-- @dd($posts[0]->author); --}}
 @section('container')
-<div class="container mt-5">
+    <div class="container mt-5">
         <h1 class="mb-3 text-center">{{ $title }}</h1>
 
         <div class="row justify-content-center mb-5">
@@ -13,23 +13,30 @@
                         <input type="hidden" name="category" value="{{ request('author') }}">
                     @endif
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="search" placeholder="Search..." value="{{ request('search') }}">
+                        <input type="text" class="form-control" name="search" placeholder="Search..."
+                            value="{{ request('search') }}">
                         <button class="btn btn-primary" type="submit">Cari</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        @if ($posts->count() > 0) 
+        @if ($posts->count() > 0)
             <div class="card mb-5">
-                <a href="/post/{{ $posts[0]->slug }}">
-                    <img src="https://source.unsplash.com/1000x400?{{ $posts[0]->category->name }}" class="card-img-top" alt="{{ $posts[0]->category->name }}">
-                </a>
+                @if ($posts[0]->image)
+                    <div style="max-height: 400px; overflow:hidden">
+                        <img src="{{ asset('storage/' . $posts[0]->image) }}" alt="" class="img-fluid"
+                            width="500">
+                    </div>
+                @else
+                    <img src="https://source.unsplash.com/1000x400?{{ $posts[0]->category->name }}" class="card-img-top"
+                        alt="{{ $posts[0]->category->name }}">
+                @endif
                 <div class="card-body">
                     <p class="card-text">
                         <small class="text-muted">Last {{ $posts[0]->created_at->diffForHumans() }}</small>
                         <a href="/posts?author={{ $posts[0]->author->username }}" class="text-decoration-none">
-                            <small class="text-muted">  by {{ $posts[0]->author->name }}</small>
+                            <small class="text-muted"> by {{ $posts[0]->author->name }}</small>
                         </a>
                         <a href="/posts?category={{ $posts[0]->category->slug }}" class="text-decoration-none">
                             <small class="text-muted "> in {{ $posts[0]->category->name }}</small>
@@ -47,11 +54,19 @@
             {{-- Loop Posts --}}
             <div class="container">
                 <div class="row ">
-                     @foreach ($posts->skip(1) as $post)
-                        <div class="col-md-4 col-sm-6" >
+                    @foreach ($posts->skip(1) as $post)
+                        <div class="col-md-4 col-sm-6">
                             <div class="card mb-3">
-                                <a href="/posts?category={{ $post->category->slug }}" class="position-absolute bg-dark text-light p-2 text-decoration-none">{{ $post->category->name }}</a>
-                                <img src="https://source.unsplash.com/1000x500?{{ $post->category->name }}" class="card-img-top" alt{{ $post->category->name }}">
+                                <a href="/posts?category={{ $post->category->slug }}"
+                                    class="position-absolute bg-dark text-light p-2 text-decoration-none">{{ $post->category->name }}</a>
+                                @if ($post->image)
+                                    <img src="{{ asset('storage/' . $post->image) }}" class="card-img-top img-fluid"
+                                        style="max-height: 300px;">
+                                @else
+                                    <img src="https://source.unsplash.com/1000x500?{{ $post->category->name }}"
+                                        class="card-img-top" alt{{ $post->category->name }}">
+                                @endif
+
                                 <div class="card-body">
                                     <p class="card-text">
                                         <small class="text-muted">Last {{ $post->created_at->diffForHumans() }}</small>
@@ -70,8 +85,7 @@
                 </div>
             </div>
             {{-- Ends Loop Posts --}}
-
-        @else 
+        @else
             <p>Post Not Found</p>
         @endif
 
